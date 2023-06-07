@@ -13,8 +13,8 @@ print("Loading the data...")
 train_df = pd.read_csv('train_df.csv', engine='pyarrow', dtype_backend='pyarrow')
 df_label_0 = train_df[train_df['label'] == 0]
 df_label_1 = train_df[train_df['label'] == 1]
-df_label_0_subset = df_label_0.sample(n=6000, random_state=42)
-df_label_1_subset = df_label_1.sample(n=6000, random_state=42)
+df_label_0_subset = df_label_0.sample(n=5000, random_state=42)
+df_label_1_subset = df_label_1.sample(n=5000, random_state=42)
 df_train = pd.concat([df_label_0_subset, df_label_1_subset])
 print(f"Train shape: {df_train.shape}")
 
@@ -100,15 +100,14 @@ print("Initializing model...")
 model = SentimentClassifier().to(device)
 optimizer = torch.optim.AdamW(model.parameters(), lr=2e-5, weight_decay=0.01)
 criterion = nn.BCEWithLogitsLoss()
-num_epochs = 40
+num_epochs = 20
 
-warmup_steps = int(0.1 * num_epochs * len(train_dataloader))
+warmup_steps = int(0.1 * num_epochs)
 def lr_lambda(current_iteration):
     if current_iteration < warmup_steps:
-        return current_iteration / warmup_steps
+        return 2e-5 * current_iteration / warmup_steps
     else:
-        return max(0.0, float(num_epochs * len(train_dataloader) - current_iteration) / float(max(1, num_epochs * len(train_dataloader) - warmup_steps)))
-
+        return 2e-5 * (1 - (current_iteration - warmup_steps) / (num_epochs * len(train_dataloader) - warmup_steps))
 scheduler = LambdaLR(optimizer, lr_lambda=lr_lambda)
 
 train_losses = []
@@ -126,7 +125,9 @@ for epoch in range(num_epochs):
         attention_mask=batch['attention_mask'].to(device)
         labels=batch['labels'].to(device)
         output=model(input_ids=input_ids,attention_mask=attention_mask)
-        loss=criterion(output.squeeze(), labels.float().squeeze())
+        output = output.float().squeeze()
+        labels = labels.float().squeeze()
+        loss=criterion(output, labels)
         loss.backward()
         optimizer.step()
         scheduler.step()
@@ -146,7 +147,9 @@ for epoch in range(num_epochs):
             attention_mask=batch['attention_mask'].to(device)
             labels=batch['labels'].to(device)
             output=model(input_ids=input_ids,attention_mask=attention_mask)
-            val_loss=criterion(output.squeeze(), labels.float().squeeze())
+            output = output.float().squeeze()
+            labels = labels.float().squeeze()
+            val_loss=criterion(output, labels)
             total_val_loss+=val_loss.item()
             total_val_steps+=1
         average_val_loss=total_val_loss/total_val_steps
@@ -156,25 +159,31 @@ for epoch in range(num_epochs):
 
 print("Starting testing loop...")
 model.eval()
-total_test_loss=0
-total_test_steps=0
-total_correct=0
-total_samples=0
+total_test_loss = 0
+total_test_steps = 0
+total_correct = 0
+total_samples = 0
+activation = nn.Sigmoid()
 with torch.no_grad():
     for batch in test_dataloader:
-        input_ids=batch['input_ids'].to(device)
-        attention_mask=batch['attention_mask'].to(device)
-        labels=batch['labels'].to(device)
-        output=model(input_ids=input_ids,attention_mask=attention_mask)
-        output=torch.round(output.squeeze().float())
-        labels=torch.round(labels.squeeze().float())
-        test_loss=criterion(output,labels)
-        total_correct+=(output==labels).sum().item()
-        total_samples+=labels.size(0)
-        total_test_loss+=test_loss.item()
-        total_test_steps+=1
-average_test_loss=total_test_loss/total_test_steps
-accuracy=total_correct/total_samples *100
+        input_ids = batch['input_ids'].to(device)
+        attention_mask = batch['attention_mask'].to(device)
+        labels = batch['labels'].to(device)
+        output = model(input_ids=input_ids, attention_mask=attention_mask)
+        output = output.float().squeeze()
+        labels = labels.float().squeeze()
+        test_loss = criterion(output, labels)
+        pred_label = torch.round(activation(output))
+        total_correct += (pred_label == labels).sum().item()
+        total_samples += labels.size(0)
+        total_test_loss += test_loss.item()
+        total_test_steps += 1
+
+average_test_loss = total_test_loss / total_test_steps
+accuracy = total_correct / total_samples
+print(f'total_correct: {total_correct}')
+print(f'total_samples: {total_samples}')
 print(f'Testing Loss: {average_test_loss}')
 print(f'Accuracy: {accuracy}')
+
 
