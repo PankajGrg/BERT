@@ -9,4 +9,7 @@ To get started, follow these steps:
 1. Clone the repository to your local machine:
 2. Install the required dependencies
 3. Run train.py
-4. Run test.py 
+4. Run test.py
+
+## Result 
+It has been trained on 10k samples, and when tested with 4k sample, it gave an apporximate accuracy of 94%.
