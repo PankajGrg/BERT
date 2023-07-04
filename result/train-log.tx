@@ -1,0 +1,41 @@
+Some weights of the model checkpoint at bert-base-uncased were not used when initializing BertModel: ['cls.predictions.transform.dense.bias', 'cls.predictions.bias', 'cls.predictions.transform.LayerNorm.weight', 'cls.seq_relationship.weight', 'cls.predictions.transform.LayerNorm.bias', 'cls.predictions.transform.dense.weight', 'cls.seq_relationship.bias', 'cls.predictions.decoder.weight']
+- This IS expected if you are initializing BertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing BertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+/root/miniconda3/envs/pankaj/lib/python3.11/site-packages/torch/cuda/__init__.py:546: UserWarning: Can't initialize NVML
+  warnings.warn("Can't initialize NVML")
+Preprocessing data...
+torch.Size([9999, 128])
+torch.Size([9999, 128])
+torch.Size([9999])
+Starting training loop...
+Epoch 1/15
+Training Loss: 0.42059169428797955
+Epoch 2/15
+Training Loss: 0.15744622844381453
+Epoch 3/15
+Training Loss: 0.08445854893418404
+Epoch 4/15
+Training Loss: 0.04582034009017836
+Epoch 5/15
+Training Loss: 0.02703900264201168
+Epoch 6/15
+Training Loss: 0.022076154222560172
+Epoch 7/15
+Training Loss: 0.018782004739303654
+Epoch 8/15
+Training Loss: 0.010750177713221135
+Epoch 9/15
+Training Loss: 0.009281135059501856
+Epoch 10/15
+Training Loss: 0.0060635987435283065
+Epoch 11/15
+Training Loss: 0.005963565118926259
+Epoch 12/15
+Training Loss: 0.0028891708088994842
+Epoch 13/15
+Training Loss: 0.0024965160942250365
+Epoch 14/15
+Training Loss: 0.002069018603028795
+Epoch 15/15
+Training Loss: 0.0026186420124756117
+Training Completed

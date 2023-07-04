@@ -1,0 +1,27 @@
+Some weights of the model checkpoint at bert-base-uncased were not used when initializing BertModel: ['cls.predictions.decoder.weight', 'cls.predictions.bias', 'cls.seq_relationship.bias', 'cls.seq_relationship.weight', 'cls.predictions.transform.LayerNorm.bias', 'cls.predictions.transform.LayerNorm.weight', 'cls.predictions.transform.dense.bias', 'cls.predictions.transform.dense.weight']
+- This IS expected if you are initializing BertModel from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing BertModel from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+/root/miniconda3/envs/pankaj/lib/python3.11/site-packages/torch/cuda/__init__.py:546: UserWarning: Can't initialize NVML
+  warnings.warn("Can't initialize NVML")
+Test shape: (4000, 2)
+Preprocessing data...
+torch.Size([4000, 128])
+torch.Size([4000, 128])
+torch.Size([4000])
+Starting testing loop...
+Testing Loss: 0.36001609669439494
+Total Correct: 3764
+Total Samples: 4000
+Accuracy: 0.941
+Confusion Matrix: [[1845  106]
+ [ 130 1919]]
+Classification Report:               precision    recall  f1-score   support
+
+         0.0       0.93      0.95      0.94      1951
+         1.0       0.95      0.94      0.94      2049
+
+    accuracy                           0.94      4000
+   macro avg       0.94      0.94      0.94      4000
+weighted avg       0.94      0.94      0.94      4000
+
+Testing Completed
